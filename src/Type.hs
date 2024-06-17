@@ -1,7 +1,8 @@
 module Type where
 
-data Type = Variable String | Type :→: Type | Type :+: Type | Type :×: Type
-data Typescheme = Type Type | Universal String Typescheme
+type Identifier = String
+data Type = Variable Identifier | Type :→: Type | Type :+: Type | Type :×: Type
+data Typescheme = Universal [Identifier] Type
 
 instance Show Type where
     show :: Type -> String
@@ -12,5 +13,5 @@ instance Show Type where
 
 instance Show Typescheme where
     show :: Typescheme -> String
-    show (Type τ) = show τ
-    show (Universal α σ) = "∀" ++ α ++ "." ++ show σ
+    show (Universal [] τ) = show τ
+    show (Universal (i:r) τ) = "∀" ++ i ++ "." ++ show (Universal r τ)

@@ -1,9 +1,8 @@
 module Substitution where
 
 import Data.List (nub, union)
-import Type (Type, Typescheme)
+import Type (Identifier, Type, Typescheme)
 
-type Identifier = String
 type Substitution = [(Type, Type)]
 data Assumption = Type ::: Identifier
 
