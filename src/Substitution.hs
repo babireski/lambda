@@ -44,7 +44,7 @@ instance Substitutable a => Substitutable [a] where
 occurs :: Type -> Type -> Bool
 occurs α β = undefined
 
-unify :: Type -> Type -> Substitution
+unify :: Type -> Type -> Maybe Substitution
 unify α β = undefined
 
 compose :: Substitution -> Substitution -> Substitution
