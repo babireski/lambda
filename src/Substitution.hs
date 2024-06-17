@@ -24,15 +24,15 @@ instance Substitutable Typescheme where
 
 instance Substitutable Assumption where
     apply :: Substitution -> Assumption -> Assumption
-    apply s σ = undefined
+    apply s a = undefined
     free :: Assumption -> [Identifier]
-    free σ = undefined
+    free a = undefined
 
 instance Substitutable a => Substitutable [a] where
     apply :: Substitution -> [a] -> [a]
-    apply s σ = undefined
+    apply s l = undefined
     free :: [a] -> [Identifier]
-    free σ = undefined
+    free l = undefined
 
 (↦) :: Type -> Type -> (Type, Type)
 (↦) α β = (α, β)
