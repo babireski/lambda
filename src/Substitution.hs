@@ -1,11 +1,11 @@
 module Substitution where
 
-import Data.List (nub)
+import Data.List (nub, union)
 import Type (Type, Typescheme)
 
 type Identifier = String
 type Substitution = [(Type, Type)]
-data Assumption = Assumption Type Identifier
+data Assumption = Type ::: Identifier
 
 class Substitutable a where
     apply :: Substitution -> a -> a
@@ -13,9 +13,15 @@ class Substitutable a where
 
 instance Substitutable Type where
     apply :: Substitution -> Type -> Type
-    apply s τ = undefined
+    apply s (α :+: β) = (apply s α) :+: (apply s β)
+    apply s (α :×: β) = (apply s α) :×: (apply s β)
+    apply s (α :→: β) = (apply s α) :→: (apply s β)
+    apply s τ = case lookup τ s of Nothing -> τ; Just σ -> σ 
     free :: Type -> [Identifier]
-    free τ = undefined
+    free (α :+: β) = (free α) ∪ (free β) 
+    free (α :×: β) = (free α) ∪ (free β)
+    free (α :→: β) = (free α) ∪ (free β)
+    free τ = [τ]
 
 instance Substitutable Typescheme where
     apply :: Substitution -> Typescheme -> Typescheme
@@ -25,15 +31,18 @@ instance Substitutable Typescheme where
 
 instance Substitutable Assumption where
     apply :: Substitution -> Assumption -> Assumption
-    apply s a = undefined
+    apply s (i ::: τ) = i ::: (apply s τ)
     free :: Assumption -> [Identifier]
-    free a = undefined
+    free (i ::: τ) = free τ
 
 instance Substitutable a => Substitutable [a] where
     apply :: Substitution -> [a] -> [a]
     apply s = map (apply s)
     free :: [a] -> [Identifier]
     free = nub ∘ concat ∘ map free
+
+(∪) :: Eq a => [a] -> [a] -> [a]
+(∪) = union
 
 (∘) :: (b -> c) -> (a -> b) -> a -> c
 (∘) = (.)
