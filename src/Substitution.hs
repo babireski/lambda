@@ -14,7 +14,7 @@ unify :: Type -> Type -> Substitution
 unify α β = undefined
 
 apply :: Substitution -> Type -> Type
-apply substitution type = undefined
+apply substitution τ = undefined
 
 compose :: Substitution -> Substitution -> Substitution
 compose s₁ s₂ = [(τ₁, apply s₁ τ₂) | (τ₁, τ₂) <- s₂] ++ s₁
