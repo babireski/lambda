@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-{-# HLINT ignore "Use concatMap" #-}
 module Substitution where
 
 import Data.List (nub)
