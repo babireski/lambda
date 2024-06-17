@@ -1,8 +1,8 @@
 module Inferer where
 
-import Expression
-import Substitution
-import Type
+import Expression (Expression (Abstraction, Application, Variable))
+import Substitution (Substitution)
+import Type (Type, Typescheme)
 
 type Context = [(String, Typescheme)]
 
