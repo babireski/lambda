@@ -1,6 +1,9 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use concatMap" #-}
 module Substitution where
 
-import Type
+import Data.List (nub)
+import Type (Type, Typescheme)
 
 type Identifier = String
 type Substitution = [(Type, Type)]
@@ -30,9 +33,12 @@ instance Substitutable Assumption where
 
 instance Substitutable a => Substitutable [a] where
     apply :: Substitution -> [a] -> [a]
-    apply s l = undefined
+    apply s = map (apply s)
     free :: [a] -> [Identifier]
-    free l = undefined
+    free = nub ∘ concat ∘ map free
+
+(∘) :: (b -> c) -> (a -> b) -> a -> c
+(∘) = (.)
 
 (↦) :: Type -> Type -> (Type, Type)
 (↦) α β = (α, β)
