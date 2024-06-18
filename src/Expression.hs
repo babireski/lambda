@@ -2,7 +2,7 @@ module Expression where
 
 import Control.Applicative (some)
 import Text.Parsec
-import Text.Parsec.String
+import Text.Parsec.String (Parser)
 
 data Expression = Abstraction String Expression | Application Expression Expression | Variable String
 
