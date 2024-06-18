@@ -18,7 +18,7 @@ generalize context τ = undefined
 instantiate :: Context -> Typescheme -> Type
 instantiate context typescheme = undefined
 
-infer :: Context -> Expression -> (Substitution, Typescheme)
+infer :: Context -> Expression -> (Substitution Typescheme, Typescheme)
 infer context (Expression.Variable x) = case lookup x context of Nothing -> error "Type error: unbound variable"; Just τ -> ([], τ)
 infer context (Application e₁ e₂) = undefined
 infer context (Abstraction x e) = undefined
