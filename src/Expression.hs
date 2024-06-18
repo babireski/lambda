@@ -10,7 +10,15 @@ instance Show Expression where
     show :: Expression -> String
     show (Variable x) = x
     show (Abstraction x e) = "λ" ++ x ++ "." ++ show e
-    show (Application e₁ e₂) = show e₁ ++ " " ++ show e₂
+    show (Application e₁ e₂) = helper₁ e₁ ++ " " ++ helper₂ e₂ where
+        helper₁ :: Expression -> String
+        helper₁ e@(Application _ _) = show e
+        helper₁ e = show e
+
+        helper₂ :: Expression -> String
+        helper₂ e@(Abstraction _ _) = "(" ++ show e ++ ")"
+        helper₂ e@(Application _ _) = "(" ++ show e ++ ")"
+        helper₂ e = show e
 
 variable :: Parser Expression
 variable = do 
@@ -28,9 +36,8 @@ abstraction = do
 application :: Parser Expression
 application = do
     e₁ <- term
-    space
-    e₂ <- term
-    return (Application e₁ e₂)
+    rest <- some (space *> term)
+    return (foldl Application e₁ rest)
 
 term :: Parser Expression
 term = parenthesis <|> abstraction <|> variable
@@ -45,3 +52,6 @@ parse :: String -> Expression
 parse input = case Text.Parsec.parse (spaces *> expression <* eof) "" input of
     Left e -> error (show e)
     Right λ -> λ
+
+input :: String
+input = "(λw.λy.λx.y (w y x)) (λs.λz.z)"
