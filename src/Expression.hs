@@ -4,7 +4,7 @@ import Control.Applicative (some)
 import Text.Parsec
 import Text.Parsec.String (Parser)
 
-data Expression = Abstraction String Expression | Application Expression Expression | Variable String
+data Expression = Abstraction String Expression | Application Expression Expression | Variable String deriving Eq
 
 instance Show Expression where
     show :: Expression -> String
@@ -54,4 +54,4 @@ parse input = case Text.Parsec.parse (spaces *> expression <* eof) "" input of
     Right λ -> λ
 
 input :: String
-input = "(λw.λy.λx.y (w y x)) (λs.λz.z)"
+input = "(λw.λy.λx.y (w y x)) ((λa.λb.λc.b (a b c)) (λs.λz.z))"
