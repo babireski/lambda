@@ -62,11 +62,11 @@ instance Substitutable Expression where
 (∘) :: (b -> c) -> (a -> b) -> a -> c
 (∘) = (.)
 
-(↦) :: Substitutable a => Identifier -> a -> (Identifier, a)
-(↦) x t = (x, t)
+-- (↦) :: Substitutable a => Identifier -> a -> (Identifier, a)
+-- (↦) x t = (x, t)
 
-occurs :: Type -> Type -> Bool
-occurs α β = undefined
+(↦) :: Identifier -> a -> (Identifier, a)
+(↦) x t = (x, t)
 
 -- unify :: Type -> Type -> Maybe Substitution
 -- unify α β = undefined
