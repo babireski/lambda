@@ -68,8 +68,8 @@ instance Substitutable Expression where
 (↦) :: Identifier -> a -> (Identifier, a)
 (↦) x t = (x, t)
 
--- unify :: Type -> Type -> Maybe Substitution
+-- unify :: Type -> Type -> Maybe (Substitution Type)
 -- unify α β = undefined
 
--- compose :: Substitution -> Substitution -> Substitution
--- compose s₁ s₂ = [(τ₁, apply s₁ τ₂) | (τ₁, τ₂) <- s₂] ++ s₁
+compose :: Substitutable a => Substitution a -> Substitution a -> Substitution a
+compose s₁ s₂ = [(τ₁, apply s₁ τ₂) | (τ₁, τ₂) <- s₂] ++ s₁
