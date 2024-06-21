@@ -8,16 +8,12 @@ type Substitution a = [(Identifier, a)]
 data Assumption = Type ::: Identifier
 
 class Substitutable a where
-    substitute :: Substitution a -> Identifier -> a
     apply :: Substitution a -> a -> a
     free :: a -> [Identifier]
 
 instance Substitutable Expression where
-    substitute :: Substitution Expression -> Identifier -> Expression
-    substitute s x = case lookup x s of Nothing -> Expression.Variable x; Just y -> y
-
     apply :: Substitution Expression -> Expression -> Expression
-    apply s (Expression.Variable x) = substitute s x
+    apply s (Expression.Variable x) = case lookup x s of Nothing -> Expression.Variable x; Just y -> y
     apply s (Application e₁ e₂) = Application (apply s e₁) (apply s e₂)
     apply s (Abstraction x₁ e₁) = Abstraction x₁ (apply [(x₂, e₂) | (x₂, e₂) <- s, x₂ /= x₁] e₁) -- Testar se x₁ não aparece livre em e₂
 
@@ -26,23 +22,24 @@ instance Substitutable Expression where
     free (Abstraction x e) = [y | y <- free e, y /= x]
     free (Application e₁ e₂) = free e₁ ∪ free e₂
 
--- instance Substitutable Type where
---     apply :: Substitution -> Type -> Type
---     apply s (α :+: β) = apply s α :+: apply s β
---     apply s (α :×: β) = apply s α :×: apply s β
---     apply s (α :→: β) = apply s α :→: apply s β
---     apply s τ = case lookup τ s of Nothing -> τ; Just σ -> σ
---     free :: Type -> [Identifier]
---     free (α :+: β) = free α ∪ free β
---     free (α :×: β) = free α ∪ free β
---     free (α :→: β) = free α ∪ free β
---     free τ = [τ]
+instance Substitutable Type where
+    apply :: Substitution Type -> Type -> Type
+    apply s (α :+: β) = apply s α :+: apply s β
+    apply s (α :×: β) = apply s α :×: apply s β
+    apply s (α :→: β) = apply s α :→: apply s β
+    apply s (Type.Variable α) = case lookup α s of Nothing -> Type.Variable α; Just σ -> σ
 
--- instance Substitutable Typescheme where
---     apply :: Substitution Typescheme -> Typescheme -> Typescheme
---     apply s σ = undefined
---     free :: Typescheme -> [Identifier]
---     free σ = undefined
+    free :: Type -> [Identifier]
+    free (α :+: β) = free α ∪ free β
+    free (α :×: β) = free α ∪ free β
+    free (α :→: β) = free α ∪ free β
+    free (Type.Variable α) = [α]
+
+instance Substitutable Typescheme where
+    apply :: Substitution Typescheme -> Typescheme -> Typescheme
+    apply s σ = undefined
+    free :: Typescheme -> [Identifier]
+    free σ = undefined
 
 -- instance Substitutable Assumption where
 --     apply :: Substitution -> Assumption -> Assumption
@@ -67,9 +64,6 @@ instance Substitutable Expression where
 
 (↦) :: Identifier -> a -> (Identifier, a)
 (↦) x t = (x, t)
-
--- unify :: Type -> Type -> Maybe (Substitution Type)
--- unify α β = undefined
 
 compose :: Substitutable a => Substitution a -> Substitution a -> Substitution a
 compose s₁ s₂ = [(τ₁, apply s₁ τ₂) | (τ₁, τ₂) <- s₂] ++ s₁
