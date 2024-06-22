@@ -5,21 +5,21 @@ import Text.Parsec
 import Text.Parsec.String (Parser)
 import Type (Identifier)
 
-data Expression = Abstraction Identifier Expression | Application Expression Expression | Variable Identifier deriving Eq
+data Expression = Abstraction Identifier Expression | Application Expression Expression | Variable Identifier deriving (Eq, Show)
 
-instance Show Expression where
-    show :: Expression -> String
-    show (Variable x) = x
-    show (Abstraction x e) = "λ" ++ x ++ "." ++ show e
-    show (Application e₁ e₂) = helper₁ e₁ ++ " " ++ helper₂ e₂ where
-        helper₁ :: Expression -> String
-        helper₁ e@(Application _ _) = show e
-        helper₁ e = show e
+-- instance Show Expression where
+--     show :: Expression -> String
+--     show (Variable x) = x
+--     show (Abstraction x e) = "λ" ++ x ++ "." ++ show e
+--     show (Application e₁ e₂) = helper₁ e₁ ++ " " ++ helper₂ e₂ where
+--         helper₁ :: Expression -> String
+--         helper₁ e@(Application _ _) = show e
+--         helper₁ e = show e
 
-        helper₂ :: Expression -> String
-        helper₂ e@(Abstraction _ _) = "(" ++ show e ++ ")"
-        helper₂ e@(Application _ _) = "(" ++ show e ++ ")"
-        helper₂ e = show e
+--         helper₂ :: Expression -> String
+--         helper₂ e@(Abstraction _ _) = "(" ++ show e ++ ")"
+--         helper₂ e@(Application _ _) = "(" ++ show e ++ ")"
+--         helper₂ e = show e
 
 variable :: Parser Expression
 variable = do 
@@ -55,4 +55,5 @@ parse input = case Text.Parsec.parse (spaces *> expression <* eof) "" input of
     Right λ -> λ
 
 input :: String
-input = "(λw.λy.λx.y (w y x)) ((λa.λb.λc.b (a b c)) (λs.λz.z))"
+input = "λs.λz.s z"
+-- input = "(λw.λy.λx.y (w y x)) ((λa.λb.λc.b (a b c)) (λs.λz.z))"

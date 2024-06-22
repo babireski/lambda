@@ -7,6 +7,7 @@ data Typescheme = Universal [Identifier] Type
 instance Show Type where
     show :: Type -> String
     show (Variable α) = α
+    show ((τ₁ :→: τ₂) :→: τ₃)  = "(" ++ show τ₁ ++ " → " ++ show τ₂ ++ ")" ++ " → " ++ show τ₂
     show (τ₁ :→: τ₂)  = show τ₁ ++ " → " ++ show τ₂
     show (τ₁ :+: τ₂)  = show τ₁ ++ " + " ++ show τ₂
     show (τ₁ :×: τ₂)  = show τ₁ ++ " × " ++ show τ₂
@@ -17,4 +18,8 @@ instance Show Typescheme where
     show (Universal (i:r) τ) = "∀" ++ i ++ "." ++ show (Universal r τ)
 
 variables :: [Identifier]
-variables = map (: []) ['α' .. 'ω']
+variables = map (: []) ['a' .. 'z']
+-- variables = map (: []) ['α' .. 'ω']
+
+(→) :: Typescheme -> Typescheme -> Typescheme
+(→) (Universal b₁ τ₁) (Universal b₂ τ₂) = Universal (b₁ <> b₂) (τ₁ :→: τ₁) -- Treat common bound variables

@@ -3,7 +3,7 @@ module Substitution where
 import Data.List (nub, union)
 import Type
 
-type Assumption = (Identifier, Type)
+type Assumption = (Identifier, Typescheme)
 type Substitution = [(Identifier, Type)]
 
 class Substitutable a where
@@ -28,7 +28,7 @@ instance Substitutable Typescheme where
     free :: Typescheme -> [Identifier]
     free (Universal α τ) = filter (∉ α) (free τ)
 
-instance Substitutable (Identifier, Type) where
+instance Substitutable (Identifier, Typescheme) where
     apply :: Substitution -> Assumption -> Assumption
     apply s (α, τ) = (α, apply s τ)
     free :: Assumption -> [Identifier]
@@ -55,5 +55,6 @@ instance Substitutable a => Substitutable [a] where
 (↦) :: Substitutable a => Identifier -> a -> (Identifier, a)
 (↦) x t = (x, t)
 
-compose :: Substitution -> Substitution -> Substitution
-compose s₁ s₂ = [(τ₁, apply s₁ τ₂) | (τ₁, τ₂) <- s₂] ++ s₁
+infixr 4 ·
+(·) :: Substitution -> Substitution -> Substitution
+(·) s₁ s₂ = [(α, apply s₁ τ) | (α, τ) <- s₂] ++ s₁
