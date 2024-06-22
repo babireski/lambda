@@ -15,3 +15,6 @@ instance Show Typescheme where
     show :: Typescheme -> String
     show (Universal [] τ) = show τ
     show (Universal (i:r) τ) = "∀" ++ i ++ "." ++ show (Universal r τ)
+
+variables :: [Identifier]
+variables = map (: []) ['α' .. 'ω']

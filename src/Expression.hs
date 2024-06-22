@@ -3,8 +3,9 @@ module Expression where
 import Control.Applicative (some)
 import Text.Parsec
 import Text.Parsec.String (Parser)
+import Type (Identifier)
 
-data Expression = Abstraction String Expression | Application Expression Expression | Variable String deriving Eq
+data Expression = Abstraction Identifier Expression | Application Expression Expression | Variable Identifier deriving Eq
 
 instance Show Expression where
     show :: Expression -> String

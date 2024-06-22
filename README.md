@@ -5,15 +5,15 @@ A simple lambda-calculus parser, type-inferer and interpreter written in Haskell
 ## Language
 
 ```
-⟨e⟩ → λ.⟨e⟩
-   | ⟨e⟩ ⟨e⟩
-   | ⟨x⟩
-   | let ⟨x⟩ = ⟨e⟩ in ⟨e⟩
-   | case ⟨e⟩ of {⟨p⟩}
-   | if ⟨e⟩ then ⟨e⟩ else ⟨e⟩
-   | (⟨e⟩, ⟨e⟩)
-   | (⟨e⟩)
-   | <c>
+⟨e⟩ → λ.⟨e⟩ | ⟨e⟩ ⟨e⟩ | ⟨x⟩ | <c>
+```
+
+```
+⟨τ⟩ → ⟨α⟩ | ⟨ι⟩ | ⟨τ⟩ → ⟨τ⟩
+```
+
+```
+⟨σ⟩ → ⟨τ⟩ | ∀⟨α⟩.⟨σ⟩
 ```
 
 ## Usage
