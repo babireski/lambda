@@ -1,6 +1,6 @@
 module Substitution where
 
-import Data.List (nub, union)
+import Data.List (nub, union, intersect)
 import Type
 
 type Assumption = (Identifier, Typescheme)
@@ -24,9 +24,15 @@ instance Substitutable Type where
 
 instance Substitutable Typescheme where
     apply :: Substitution -> Typescheme -> Typescheme
-    apply s (Universal α τ) = Universal α (apply (filter ((∉ α) ∘ fst) s) τ)
+    apply s (Universal α τ) = if null (α ∩ free s) then Universal α (apply [(x, t) | (x, t) <- s, x ∉ α] τ) else error "Type error: unable to substitute"
     free :: Typescheme -> [Identifier]
     free (Universal α τ) = filter (∉ α) (free τ)
+
+instance Substitutable (Identifier, Type) where
+    apply :: Substitution -> (Identifier, Type) -> (Identifier, Type)
+    apply s (α, τ) = (α, apply s τ)
+    free :: (Identifier, Type) -> [Identifier]
+    free (α, τ) = free τ
 
 instance Substitutable (Identifier, Typescheme) where
     apply :: Substitution -> Assumption -> Assumption
@@ -43,11 +49,14 @@ instance Substitutable a => Substitutable [a] where
 (∪) :: Eq a => [a] -> [a] -> [a]
 (∪) = union
 
+(∩) :: Eq a => [a] -> [a] -> [a]
+(∩) = intersect
+
 (∈) :: (Foldable t, Eq a) => a -> t a -> Bool
 (∈) = elem
 
 (∉) :: (Foldable t, Eq a) => a -> t a -> Bool
-(∉) x l = not (x ∈ l) 
+(∉) x l = not (x ∈ l)
 
 (∘) :: (b -> c) -> (a -> b) -> a -> c
 (∘) = (.)
