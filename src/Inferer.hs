@@ -6,22 +6,23 @@ import Substitution
 import Type
 import Unifier
 
-import Debug.Trace
-
 type Inferer a = State Int a
 type Context = [Assumption]
 
-fresh :: Inferer Typescheme
+fresh :: Inferer Type
 fresh = do
     n <- get
     put (n + 1)
-    return $ Universal [] $ Type.Variable (variables !! n)
+    return $ Type.Variable (variables !! n)
 
-generalize :: Context -> Type -> Type
-generalize context τ = undefined
+generalize :: Context -> Type -> Typescheme
+generalize context τ = Universal [α | α <- free τ, α ∉ free context] τ
 
-instantiate :: Context -> Type -> Type
-instantiate context typescheme = undefined
+instantiate :: Typescheme -> Inferer Type
+instantiate (Universal σ τ) = do
+    ϕ <- traverse (const fresh) σ
+    let s = zip σ ϕ
+    return $ apply s τ
 
 infer :: Context -> Expression -> Inferer (Typescheme, Substitution)
 infer context (Expression.Variable x) = case lookup x context of Nothing -> error "Type error: unbound variable"; Just τ -> return (τ, [])
@@ -37,10 +38,7 @@ infer context (Abstraction x e) = do
     return (apply s (α → τ), s)
 
 e :: Expression
-e = Expression.parse input
+e = Expression.parse "λx.λy.x"
 
-i :: Inferer (Typescheme, Substitution)
-i = infer [] e
-
-t :: (Typescheme, Substitution)
-t = evalState i 0
+typing :: Expression -> (Typescheme, Substitution)
+typing e = evalState (infer [] e) 0

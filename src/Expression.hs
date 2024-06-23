@@ -5,7 +5,16 @@ import Text.Parsec
 import Text.Parsec.String (Parser)
 import Type (Identifier)
 
-data Expression = Abstraction Identifier Expression | Application Expression Expression | Variable Identifier deriving (Eq, Show)
+data Expression = Abstraction Identifier Expression 
+                | Application Expression Expression
+                -- | Case Expression [(P)]
+                | Condition Expression Expression Expression
+                | Constant Constant
+                | Variable Identifier
+                | Naming Identifier Expression Expression
+                deriving (Eq, Show)
+
+data Constant = Integer Integer | Boolean Bool deriving (Eq, Show)
 
 -- instance Show Expression where
 --     show :: Expression -> String
@@ -40,8 +49,32 @@ application = do
     rest <- some (space *> term)
     return (foldl Application e₁ rest)
 
+naming :: Parser Expression
+naming = do
+    string "let "
+    x <- some letter
+    string " = "
+    e₁ <- expression
+    string " in "
+    e₂ <- expression
+    return (Naming x e₁ e₂)
+
+condition :: Parser Expression
+condition = do
+    string "if "
+    e₁ <- expression
+    string " then "
+    e₂ <- expression
+    string " else "
+    e₃ <- expression
+    return (Condition e₁ e₂ e₃)
+
+-- constant :: Parser Expression
+-- constant = do
+--     return ()
+
 term :: Parser Expression
-term = parenthesis <|> abstraction <|> variable
+term = parenthesis <|> abstraction <|> naming <|> variable
 
 expression :: Parser Expression
 expression = try application <|> term
@@ -53,7 +86,3 @@ parse :: String -> Expression
 parse input = case Text.Parsec.parse (spaces *> expression <* eof) "" input of
     Left e -> error (show e)
     Right λ -> λ
-
-input :: String
-input = "λs.λz.s z"
--- input = "(λw.λy.λx.y (w y x)) ((λa.λb.λc.b (a b c)) (λs.λz.z))"
