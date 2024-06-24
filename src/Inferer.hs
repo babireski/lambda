@@ -16,7 +16,7 @@ fresh = do
     return $ Type.Variable (variables !! n)
 
 extend :: Context -> Assumption -> Context
-extend context (α, τ) = context <> [(α, τ) | α ∉ map fst context]
+extend context (x₁, τ₁) = (x₁, τ₁) : [(x, τ) | (x, τ) <- context, x /= x₁]
 
 generalize :: Context -> Type -> Typescheme
 generalize context τ = Universal [α | α <- free τ, α ∉ free context] τ
@@ -26,18 +26,18 @@ instantiate (Universal σ τ) = do
     ϕ <- traverse (const fresh) σ
     let s = zip σ ϕ
     return $ apply s τ
-
+ 
 infer :: Context -> Expression -> Inferer (Type, Substitution)
 infer context (Expression.Variable x) = case lookup x context of 
-    Nothing -> error "Type error: unbound variable"
+    Nothing -> error ("Type error: unbound variable " ++ x)
     Just τ₁ -> do
         τ₂ <- instantiate τ₁
         return (τ₂, [])
 infer context (Application e₁ e₂) = do
-    (t₁, s₁) <- infer context e₁
-    (t₂, s₂) <- infer (apply s₁ context) e₂
+    (τ₁, s₁) <- infer context e₁
+    (τ₂, s₂) <- infer (apply s₁ context) e₂
     α <- fresh
-    let s₃ = case unify (apply s₂ t₁) (t₂ :→: α) of Nothing -> error "Type error: unable to unify"; Just s -> s
+    let s₃ = case unify (apply s₂ τ₁) (τ₂ :→: α) of Nothing -> error ("Type error: unable to unify " ++ show (apply s₂ τ₁) ++ " with " ++ show (τ₂ :→: α)); Just s -> s
     return (apply s₃ α, s₃ · s₂ · s₁)
 infer context (Abstraction x e) = do
     α <- fresh

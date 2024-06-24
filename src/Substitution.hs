@@ -15,7 +15,9 @@ instance Substitutable Type where
     apply s (α :+: β) = apply s α :+: apply s β
     apply s (α :×: β) = apply s α :×: apply s β
     apply s (α :→: β) = apply s α :→: apply s β
-    apply s (Variable α) = case lookup α s of Nothing -> Variable α; Just σ -> σ
+    apply s (Variable α) = case lookup α s of
+        Nothing -> Variable α
+        Just σ -> σ
     free :: Type -> [Identifier]
     free (α :+: β) = free α ∪ free β
     free (α :×: β) = free α ∪ free β
@@ -66,4 +68,4 @@ instance Substitutable a => Substitutable [a] where
 
 infixr 4 ·
 (·) :: Substitution -> Substitution -> Substitution
-(·) s₁ s₂ = [(α, apply s₁ τ) | (α, τ) <- s₂] ++ s₁
+(·) s₁ s₂ = apply s₁ s₂ ∪ s₁
