@@ -18,4 +18,4 @@ instance Show Typescheme where
     show (Universal (i:r) τ) = "∀" ++ i ++ "." ++ show (Universal r τ)
 
 variables :: [Identifier]
-variables = map (: []) ['a' .. 'z']
+variables = map (: []) ['α' .. 'ω']
