@@ -2,7 +2,7 @@ module Type where
 
 type Identifier = String
 data Type = Variable Identifier | Type :→: Type | Type :+: Type | Type :×: Type deriving Eq
-data Typescheme = Universal [Identifier] Type
+data Typescheme = Universal [Identifier] Type deriving Eq
 
 instance Show Type where
     show :: Type -> String
