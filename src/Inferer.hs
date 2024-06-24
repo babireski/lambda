@@ -44,11 +44,8 @@ infer context (Abstraction x e) = do
     (τ, s) <- infer (extend context (x, Universal [] α)) e
     return (apply s (α :→: τ), s)
 
-input :: Expression
-input = Expression.parse "λs.λz.s z"
-
-typing :: Expression -> (Type, Substitution)
-typing e = evalState (infer [] e) 0
-
 format :: Type -> Type
 format τ = apply s τ where s = zip (free τ) (map Type.Variable variables)
+
+typing :: Expression -> Type
+typing e = format $ fst $ evalState (infer [] e) 0
