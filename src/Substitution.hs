@@ -12,16 +12,18 @@ class Substitutable a where
 
 instance Substitutable Type where
     apply :: Substitution -> Type -> Type
-    apply s (α :+: β) = apply s α :+: apply s β
-    apply s (α :×: β) = apply s α :×: apply s β
+    apply s (Application α β) = Application (apply s α) (apply s β)
     apply s (α :→: β) = apply s α :→: apply s β
     apply s (Variable α) = case lookup α s of
         Nothing -> Variable α
         Just σ -> σ
+    apply s (Constructor α) = case lookup α s of
+        Nothing -> Constructor α
+        Just σ -> σ
     free :: Type -> [Identifier]
-    free (α :+: β) = free α ∪ free β
-    free (α :×: β) = free α ∪ free β
+    free (Application α β) = free α ∪ free β
     free (α :→: β) = free α ∪ free β
+    free (Constructor _) = []
     free (Variable α) = [α]
 
 instance Substitutable Typescheme where

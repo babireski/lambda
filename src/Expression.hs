@@ -5,7 +5,15 @@ import Text.Parsec
 import Text.Parsec.String (Parser)
 import Type (Identifier)
 
-data Expression = Abstraction Identifier Expression | Application Expression Expression | Variable Identifier deriving Eq
+data Constant = Boolean Bool | Integer Int deriving Eq
+data Expression = Abstraction Identifier Expression
+                | Application Expression Expression
+                | Constant Constant
+                | Constructor Identifier
+                | If Expression Expression Expression
+                | Let Identifier Expression Expression
+                | Variable Identifier
+                deriving Eq
 
 instance Show Expression where
     show :: Expression -> String
@@ -22,23 +30,31 @@ instance Show Expression where
         helper₂ e = show e
 
 variable :: Parser Expression
-variable = do 
-    x <- some letter
-    return (Variable x)
+variable = do
+    h <- lower
+    t <- many letter
+    return (Variable (h : t))
 
 abstraction :: Parser Expression
 abstraction = do
     char 'λ'
-    x <- some letter
+    h <- lower
+    t <- many letter
     char '.'
     e <- expression
-    return (Abstraction x e)
+    return (Abstraction (h : t) e)
 
 application :: Parser Expression
 application = do
     e₁ <- term
     rest <- some (space *> term)
     return (foldl Application e₁ rest)
+
+constructor :: Parser Expression
+constructor = do
+    h <- upper
+    t <- many letter
+    return (Constructor (h : t))
 
 term :: Parser Expression
 term = parenthesis <|> abstraction <|> variable
