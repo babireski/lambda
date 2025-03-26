@@ -1,7 +1,7 @@
 module Unifier where
 
 import Substitution
-import Type
+import Type (Identifier, Type (..), Typescheme (..))
 
 class Unifiable a where
     unify :: a -> a -> Maybe Substitution

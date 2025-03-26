@@ -1,7 +1,7 @@
 module Substitution where
 
 import Data.List (nub, union, intersect)
-import Type
+import Type (Identifier, Type (..), Typescheme(..))
 
 type Assumption = (Identifier, Typescheme)
 type Substitution = [(Identifier, Type)]

@@ -1,10 +1,10 @@
 module Inferer where
 
 import Control.Monad.State
-import Expression
-import Substitution
+import Expression (Expression (..))
+import Substitution ((∉), Assumption, Substitutable (apply, free), Substitution, (·))
 import Type
-import Unifier
+import Unifier (Unifiable (unify))
 
 type Inferer a = State Int a
 type Context = [Assumption]
@@ -26,7 +26,7 @@ instantiate (Universal σ τ) = do
     ϕ <- traverse (const fresh) σ
     let s = zip σ ϕ
     return $ apply s τ
- 
+
 infer :: Context -> Expression -> Inferer (Type, Substitution)
 infer context (Expression.Variable x) = case lookup x context of 
     Nothing -> error ("Type error: unbound variable " ++ x)
